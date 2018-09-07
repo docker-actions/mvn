@@ -9,7 +9,7 @@ ENV ROOTFS /build/rootfs
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Build pre-requisites
-RUN bash -c 'mkdir -p ${ROOTFS}/{bin,sbin,usr/bin,usr/local/bin,opt}'
+RUN bash -c 'mkdir -p ${ROOTFS}/{sbin,usr/bin,usr/local/bin,opt}'
 
 # Install pre-requisites
 RUN apt-get update \
@@ -26,9 +26,6 @@ RUN cd ${ROOTFS}/opt \
        ln -s /opt/maven/bin/${bin} ${ROOTFS}/usr/bin/${bin}; \
      done
 
-# Maven wants /bin/sh
-RUN ln -s /bin/bash ${ROOTFS}/bin/sh
-
 # Move /sbin out of the way
 RUN mv ${ROOTFS}/sbin ${ROOTFS}/sbin.orig \
       && mkdir -p ${ROOTFS}/sbin \
@@ -40,7 +37,7 @@ RUN mv ${ROOTFS}/sbin ${ROOTFS}/sbin.orig \
 COPY entrypoint.sh ${ROOTFS}/usr/local/bin/entrypoint.sh
 RUN chmod +x ${ROOTFS}/usr/local/bin/entrypoint.sh
 
-FROM actions/java:10.0.2-jdk-4
+FROM actions/java:${JAVA_VERSION}
 LABEL maintainer = "ilja+docker@bobkevic.com"
 
 ARG ROOTFS=/build/rootfs
